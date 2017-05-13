@@ -8,9 +8,9 @@ libbnr is the library bnr is using to do its job.
 
 Algorithms included currently:
 
-* mass
-* heats
-* hybrid
+* [mass](https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.046115)
+* [heat](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.99.154301)
+* [hybrid](http://www.pnas.org/content/107/10/4511.short)
 * HNBI
 * mass degree
 * mass score 1
