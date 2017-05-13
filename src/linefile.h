@@ -16,7 +16,7 @@
  * when you get a file contains 3 int parts in a line, but you use create_LineFile(xx, 1, 1, -1);
  * 	then you only fetch the first 2 parts from each line. lf->i3 will be NULL.
  *
- *  Author: RuiXiao <xrfind@gmail.com>
+ *  Author: RuiOAIX <rui.oaix@gmail.com>
  */
 
 #ifndef LINEFILE_H 
