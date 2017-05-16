@@ -1,8 +1,8 @@
 #include "log.h"
 #include "utils.h"
 
-static FILE *log_file;
-static LOG_LEVEL log_level;
+LOG_LEVEL log_level = LOG_INFO;
+FILE *log_file;
 
 void set_log_level(LOG_LEVEL ll) {
 	log_level = ll;

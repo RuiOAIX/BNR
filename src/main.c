@@ -2,7 +2,8 @@
 #include "tasklist.h"
 
 int main(int argc, char **argv) {
-	setloglevel(LOG_INFO);
+	set_log_level(LOG_INFO);
+	set_log_file(0);
 
 	struct OPTION *op = setOPTION(argc, argv);
 	struct TASKLIST *tl = walkingTL(op);

@@ -47,6 +47,9 @@ typedef enum LOG_LEVEL {
 	}\
 } while(0)
 
+LOG_LEVEL log_level;
+FILE *log_file;
+
 void set_log_level(LOG_LEVEL ll);
 LOG_LEVEL get_log_level(void);
 void set_log_file(char *logfilename);
