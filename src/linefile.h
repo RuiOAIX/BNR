@@ -10,20 +10,21 @@
 #define LINE_LENGTH 2000
 #define LINES_READIN 1000
 
-struct LineFile {
-	//private
+typedef struct LineFile {
 	int **ilist;
 	double **dlist;
 	char ***slist;
 	int iNum, dNum, sNum;
 	long linesNum;
 	long memNum;
-};
+} LineFile;
 
-struct LineFile *create_linefile(char * filename, ...);
-void free_linefile(struct LineFile *lf);
-void save_linefile(struct LineFile *lf, char *filename);
-struct LineFile *union_all_linefile(struct LineFile *lf1, struct LineFile *lf2);
-struct LineFile *clone_linefile(struct LineFile *lf);
+LineFile *create_linefile(char * filename, ...);
+void free_linefile(LineFile *lf);
+
+LineFile *union_all_linefile(LineFile *lf1, LineFile *lf2);
+LineFile *clone_linefile(LineFile *lf);
+
+void save_linefile_to_file(LineFile *lf, char *filename);
 
 #endif

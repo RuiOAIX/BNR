@@ -6,8 +6,8 @@
 #include <string.h>
 
 //create an empty but completive LineFile.
-static struct LineFile *init_linefile(void) {
-	struct LineFile *lf = smalloc(sizeof(struct LineFile));
+static LineFile *init_linefile(void) {
+	LineFile *lf = smalloc(sizeof(LineFile));
 	lf->linesNum = 0;
 	lf->memNum = 0;
 	lf->iNum = 0;
@@ -20,7 +20,7 @@ static struct LineFile *init_linefile(void) {
 }
 
 //alloc memory according to typelist.
-static void init_memory_linefile(struct LineFile *lf, unsigned char *types, int typesSize) {
+static void init_memory_linefile(LineFile *lf, unsigned char *types, int typesSize) {
 	int flag[256] = {0};
 
 	int i;
@@ -42,7 +42,7 @@ static void init_memory_linefile(struct LineFile *lf, unsigned char *types, int 
 }
 
 //increase memory, not need typelist anymore, just check whether point is NULL or not.
-static void increase_linefile(struct LineFile *lf) {
+static void increase_linefile(LineFile *lf) {
 	int i;
 	for (i=0; i<lf->iNum; ++i) {
 		lf->ilist[i] = srealloc(lf->ilist[i], (size_t)(lf->memNum + LINES_STEP) * sizeof(int));
@@ -57,7 +57,7 @@ static void increase_linefile(struct LineFile *lf) {
 	LOG(LOG_DBG, "increase the size of LineFile, now memNum is %ld, linesNum is %ld.", lf->memNum, lf->linesNum);
 }
 
-static int save_1line_linefile(struct LineFile *lf, char **parts, unsigned char *types, int typesSize) {
+static int save_1line_linefile(LineFile *lf, char **parts, unsigned char *types, int typesSize) {
 	int IL = 0, DL = 0, SL = 0, has_problem = 0;
 	char *pend;
 	int i;
@@ -98,6 +98,8 @@ static int save_1line_linefile(struct LineFile *lf, char **parts, unsigned char 
 				lf->slist[SL][lf->linesNum] = smalloc(size * sizeof(char));
 				memcpy(lf->slist[SL++][lf->linesNum], parts[i], size);
 				break;
+			case '-':
+				break;
 			default:
 				LOG(LOG_FATAL, "wrong type.");
 		}
@@ -106,14 +108,15 @@ static int save_1line_linefile(struct LineFile *lf, char **parts, unsigned char 
 	return has_problem;
 }
 
-struct LineFile *create_linefile(char *filename, ...) {
-	if (!filename) return 0;
+LineFile *create_linefile(char *filename, ...) {
+	if (!filename) return init_linefile();
 
 	//get types
 	char *flag[256] = {0};
 	flag['I'] = flag['i'] = "Int";
 	flag['D'] = flag['d'] = "Double";
 	flag['S'] = flag['s'] = "String";
+	flag['-'] = "IGNORE";
 	va_list vl;
 	va_start(vl, filename);
 	unsigned char types[MAX_FILE_COLUMN_NUMBER] = {0};
@@ -140,7 +143,7 @@ struct LineFile *create_linefile(char *filename, ...) {
 	//check filename.
 	FILE *fp = sfopen(filename, "r");
 
-	struct LineFile *lf = init_linefile();
+	LineFile *lf = init_linefile();
 	init_memory_linefile(lf, types, typesSize);
 
 	char *delimiter = "\t ,:\n";
@@ -165,8 +168,8 @@ struct LineFile *create_linefile(char *filename, ...) {
 	return lf;
 }
 
-void free_linefile(struct LineFile *lf) {
-	LOG(LOG_DBG, "free a struct LineFile.");
+void free_linefile(LineFile *lf) {
+	LOG(LOG_DBG, "free a LineFile.");
 	int i;
 	long j;
 	for (i = 0; i < lf->iNum; ++i) {
@@ -187,7 +190,7 @@ void free_linefile(struct LineFile *lf) {
 	free(lf);
 }
 
-void save_linefile(struct LineFile *lf, char *filename) {
+void save_linefile_to_file(LineFile *lf, char *filename) {
 	if (!lf) {
 		LOG(LOG_DBG, "lf == NULL, print nothing.\n");
 		return;
@@ -211,7 +214,7 @@ void save_linefile(struct LineFile *lf, char *filename) {
 	LOG(LOG_INFO, "LineFile saved in \"%s\"", filename);
 }
 
-struct LineFile *union_all_linefile(struct LineFile *lf1, struct LineFile *lf2) {
+LineFile *union_all_linefile(LineFile *lf1, LineFile *lf2) {
 	if (!lf1 || !lf2) {
 		LOG(LOG_WARN, "lf1 or lf2 is NULL, return NULL.");
 		return 0;
@@ -221,7 +224,7 @@ struct LineFile *union_all_linefile(struct LineFile *lf1, struct LineFile *lf2) 
 		return 0;
 	}
 
-	struct LineFile *lf = init_linefile();
+	LineFile *lf = init_linefile();
 	lf->linesNum = lf1->linesNum + lf2->linesNum;
 	lf->memNum = lf->linesNum;
 	lf->iNum = lf1->iNum;
@@ -269,13 +272,13 @@ struct LineFile *union_all_linefile(struct LineFile *lf1, struct LineFile *lf2) 
 	return lf;
 }
 
-struct LineFile *clone_linefile(struct LineFile *lf) {
+LineFile *clone_linefile(LineFile *lf) {
 	if (!lf) {
 		LOG(LOG_WARN, "source LineFile is NULL, return NULL.");
 		return 0;
 	}
 
-	struct LineFile *newlf = init_linefile();
+	LineFile *newlf = init_linefile();
 	newlf->memNum = newlf->linesNum = lf->linesNum;
 	newlf->iNum = lf->iNum;
 	newlf->dNum = lf->dNum;
@@ -310,5 +313,4 @@ struct LineFile *clone_linefile(struct LineFile *lf) {
 	LOG(LOG_INFO, "LF cloned, new LF linesNum is %ld, old LF linesNum is %ld.", lf->linesNum, newlf->linesNum);
 	return newlf;
 }
-
 
